@@ -4,11 +4,10 @@ using UnityEngine;
 
 public abstract class Interactable : MonoBehaviour
 {
-    public string promptMesaage;
-    public int lol = 10;
+    public string promptMessage;
 
     public void BaseInteract(){
-        Debug.Log(promptMesaage);
+        Debug.Log(promptMessage);
         Interact();
     }
     protected virtual void Interact(){

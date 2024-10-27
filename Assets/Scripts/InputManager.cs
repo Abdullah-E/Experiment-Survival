@@ -28,7 +28,7 @@ public class InputManager : MonoBehaviour
     private void LateUpdate()
     {
         Vector2 input = standing.Look.ReadValue<Vector2>();
-        Debug.Log(look);
+        // Debug.Log(look);
         look.ProcessLook(input);
     }
 

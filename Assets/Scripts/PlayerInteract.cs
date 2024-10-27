@@ -19,16 +19,18 @@ public class PlayerInteract : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+        Ray ray = new(cam.transform.position, cam.transform.forward);
         // Physics.Raycast(ray, out RaycastHit hit, distance);
 
-        Debug.Log(ray);
-        Debug.DrawRay(ray.origin, ray.direction * distance);
+        // Debug.Log(ray);
+        // Debug.DrawRay(ray.origin, ray.direction * distance);
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit,distance,layerMask)){
             //get interactable in a variable:
             Interactable interactable = hit.collider.GetComponent<Interactable>();
-            Debug.Log(interactable);
+            // Debug.Log("hit");
+            // Debug.Log(hit.collider.name);
+            // Debug.Log(interactable);
             if(interactable != null){
                 Debug.Log(interactable.promptMessage);
             }
