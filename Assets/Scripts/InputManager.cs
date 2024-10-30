@@ -7,15 +7,19 @@ public class InputManager : MonoBehaviour
 {
     
     private PlayerInput playerInput;
-    private PlayerInput.StandingActions standing;
+    public PlayerInput.StandingActions standing;
+    public PlayerInput.SittingActions sitting;
 
     private PlayerMotor motor;
     private PlayerLook look;
     void Awake() {
+        //initialization
         playerInput = new PlayerInput();
         standing = playerInput.Standing;
+        sitting = playerInput.Sitting;
 
         motor = GetComponent<PlayerMotor>();
+        //callback attached:
         standing.Jump.performed += ctx => motor.Jump();
 
         look = GetComponent<PlayerLook>();
@@ -34,8 +38,20 @@ public class InputManager : MonoBehaviour
 
     private void OnEnable() {
         standing.Enable();
+        sitting.Disable();
     }
     private void OnDisable() {
         standing.Disable();
+        sitting.Disable();
+    }
+
+    public void SwitchToSitting(){
+        standing.Disable();
+        sitting.Enable();
+    }
+
+    public void SwitchToStanding(){
+        sitting.Disable();
+        standing.Enable();
     }
 }

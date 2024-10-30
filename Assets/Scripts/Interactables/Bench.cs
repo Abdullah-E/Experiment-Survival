@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Bench : Interactable
 {
-    // Start is called before the first frame update
+    [SerializeField]
+    private GameObject player;
+    private bool sitting;
+    
     void Start()
     {
         
@@ -18,6 +21,16 @@ public class Bench : Interactable
 
     protected override void Interact()
     {
-        Debug.Log("Interacting with bench");
+        // sitting = !sitting;
+        // Debug.Log("interacting with bench :3" + sitting);
+        // //change input mode
+        // if(sitting){
+        //     player.GetComponent<InputManager>().SwitchToSitting();
+        // }else{
+        //     player.GetComponent<InputManager>().SwitchToStanding();
+        // }
+
+        //enable animations
+        
     }
 }

@@ -53,6 +53,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""bca8ca03-8c96-4138-984f-074da9506518"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -130,6 +139,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cb1679c8-eb26-4b8d-8916-63e141e5962c"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -650,6 +670,34 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Sitting"",
+            ""id"": ""926ec468-c7ca-4970-9eb7-d9d655881ae0"",
+            ""actions"": [
+                {
+                    ""name"": ""Stand"",
+                    ""type"": ""Button"",
+                    ""id"": ""86ef8c88-8328-4dcf-9108-c0cd6908cfeb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7b8eb7eb-b2bf-4c3c-b71a-beecc6bfd543"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Stand"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -659,6 +707,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Standing_Movement = m_Standing.FindAction("Movement", throwIfNotFound: true);
         m_Standing_Jump = m_Standing.FindAction("Jump", throwIfNotFound: true);
         m_Standing_Look = m_Standing.FindAction("Look", throwIfNotFound: true);
+        m_Standing_Interact = m_Standing.FindAction("Interact", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -671,6 +720,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        // Sitting
+        m_Sitting = asset.FindActionMap("Sitting", throwIfNotFound: true);
+        m_Sitting_Stand = m_Sitting.FindAction("Stand", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -735,6 +787,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Standing_Movement;
     private readonly InputAction m_Standing_Jump;
     private readonly InputAction m_Standing_Look;
+    private readonly InputAction m_Standing_Interact;
     public struct StandingActions
     {
         private @PlayerInput m_Wrapper;
@@ -742,6 +795,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Movement => m_Wrapper.m_Standing_Movement;
         public InputAction @Jump => m_Wrapper.m_Standing_Jump;
         public InputAction @Look => m_Wrapper.m_Standing_Look;
+        public InputAction @Interact => m_Wrapper.m_Standing_Interact;
         public InputActionMap Get() { return m_Wrapper.m_Standing; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -760,6 +814,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
         }
 
         private void UnregisterCallbacks(IStandingActions instance)
@@ -773,6 +830,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
         }
 
         public void RemoveCallbacks(IStandingActions instance)
@@ -908,11 +968,58 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // Sitting
+    private readonly InputActionMap m_Sitting;
+    private List<ISittingActions> m_SittingActionsCallbackInterfaces = new List<ISittingActions>();
+    private readonly InputAction m_Sitting_Stand;
+    public struct SittingActions
+    {
+        private @PlayerInput m_Wrapper;
+        public SittingActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Stand => m_Wrapper.m_Sitting_Stand;
+        public InputActionMap Get() { return m_Wrapper.m_Sitting; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(SittingActions set) { return set.Get(); }
+        public void AddCallbacks(ISittingActions instance)
+        {
+            if (instance == null || m_Wrapper.m_SittingActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_SittingActionsCallbackInterfaces.Add(instance);
+            @Stand.started += instance.OnStand;
+            @Stand.performed += instance.OnStand;
+            @Stand.canceled += instance.OnStand;
+        }
+
+        private void UnregisterCallbacks(ISittingActions instance)
+        {
+            @Stand.started -= instance.OnStand;
+            @Stand.performed -= instance.OnStand;
+            @Stand.canceled -= instance.OnStand;
+        }
+
+        public void RemoveCallbacks(ISittingActions instance)
+        {
+            if (m_Wrapper.m_SittingActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ISittingActions instance)
+        {
+            foreach (var item in m_Wrapper.m_SittingActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_SittingActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public SittingActions @Sitting => new SittingActions(this);
     public interface IStandingActions
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -926,5 +1033,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+    }
+    public interface ISittingActions
+    {
+        void OnStand(InputAction.CallbackContext context);
     }
 }
