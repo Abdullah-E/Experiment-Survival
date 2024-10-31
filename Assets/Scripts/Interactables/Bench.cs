@@ -21,14 +21,14 @@ public class Bench : Interactable
 
     protected override void Interact()
     {
-        // sitting = !sitting;
-        // Debug.Log("interacting with bench :3" + sitting);
-        // //change input mode
-        // if(sitting){
-        //     player.GetComponent<InputManager>().SwitchToSitting();
-        // }else{
-        //     player.GetComponent<InputManager>().SwitchToStanding();
-        // }
+        sitting = !sitting;
+        Debug.Log("interacting with bench :3" + sitting);
+        //change input mode
+        if(sitting){
+            player.GetComponent<InputManager>().SwitchToSitting(this);
+        }else{
+            player.GetComponent<InputManager>().SwitchToStanding();
+        }
 
         //enable animations
         
