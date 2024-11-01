@@ -11,7 +11,7 @@ public class InputManager : MonoBehaviour
     public PlayerInput.SittingActions sitting;
 
     public InputActionMap CurrentActionMap {get;private set;}
-    public Bench activeBench {get;private set;}
+    public Bench ActiveBench {get;private set;}
 
     private PlayerMotor motor;
     private PlayerLook look;
@@ -63,13 +63,13 @@ public class InputManager : MonoBehaviour
         standing.Disable();
         sitting.Enable();
         CurrentActionMap = sitting;
-        activeBench = bench;
+        ActiveBench = bench;
     }
 
     public void SwitchToStanding(){
         sitting.Disable();
         standing.Enable();
         CurrentActionMap = standing;
-        activeBench = null;
+        ActiveBench = null;
     }
 }

@@ -48,7 +48,7 @@ public class PlayerInteract : MonoBehaviour
         }
         else if(inputManager.CurrentActionMap == inputManager.sitting.Get()){
             if(inputManager.sitting.Stand.triggered){
-                inputManager.activeBench.BaseInteract();
+                inputManager.ActiveBench.BaseInteract();
             }
         }
     }
