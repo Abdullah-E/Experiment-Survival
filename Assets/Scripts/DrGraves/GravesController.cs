@@ -13,9 +13,11 @@ public class GravesController : MonoBehaviour
     private string currentState;
     public PatrollingPath path;
     private GameObject player;
-    public float sightRange = 10f;
 
-    public float fov = 90f;
+
+    private float sightRange = 100f;
+    private float sqrSightRange = 10000f;
+    private float fov = 90f;
     void Start()
     {
         stateMachine = GetComponent<StateMachine>();
@@ -36,14 +38,14 @@ public class GravesController : MonoBehaviour
         if(player == null) return false;
         //check distance:
         Vector3 diff = player.transform.position - transform.position;
-        float distance = diff.magnitude;
-        if(distance > sightRange) return false;
+        float distance = diff.sqrMagnitude;
+        if(distance > sqrSightRange) return false;
 
         //check angle:
         Vector3 forward = transform.forward;
         float angle = Vector3.Angle(diff, forward);
         if(angle >= -fov && angle <= fov){
-            Debug.Log("Player is visible");
+            // Debug.Log("Player is visible");
             //check env objects:
             Ray ray = new(transform.position, diff);
             RaycastHit hit;

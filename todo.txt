@@ -1,2 +1,7 @@
 items (basic)
+inventory
+
 enemy damage
+enemy health
+player health
+player attack
