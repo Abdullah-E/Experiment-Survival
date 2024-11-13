@@ -32,6 +32,10 @@ public class StateMachine : MonoBehaviour
             currentState.player = GameObject.FindGameObjectWithTag("Player");
 
             currentState.controller = GetComponent<GravesController>();
+            if(currentState.controller == null){
+                Debug.LogError("State Machine could not find the enemy controller");
+                return;
+            }
             currentState.Enter();
 
         }

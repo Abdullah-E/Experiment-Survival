@@ -1,7 +1,10 @@
 items (basic)
 inventory
 
-enemy damage
-enemy health
-player health
+enemy damage (basic implemented)
+player health (basic implemented)
+player death
+
 player attack
+    player stamina
+    enemy health
