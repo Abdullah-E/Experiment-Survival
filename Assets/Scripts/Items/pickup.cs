@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class pickup : MonoBehaviour
+public class Pickup : MonoBehaviour
 {
     [SerializeField] Transform itemHoldPoint;
     [SerializeField] private GameObject heldItem;
     [SerializeField] float pickupRange = 3f;
     [SerializeField] LayerMask pickupLayer;
+    [SerializeField] public Item Item;
 
     private PlayerInput playerInput;
 
@@ -39,23 +40,24 @@ public class pickup : MonoBehaviour
         {
             GameObject item = hit.collider.gameObject;
 
-            if (item != null)
+            // Check if the item has an ItemController component
+            ItemController itemController = item.GetComponent<ItemController>();
+            if (itemController != null)
             {
-                heldItem = item;
-                AttachItem();
+                // Add the item to the InventoryManager
+                InventoryManager.Instance.Add(itemController.Item);
+                InventoryManager.Instance.Add(Item);
+
+                // Deactivate the item in the scene
+                item.SetActive(false);
+
+                Debug.Log($"Picked up {itemController.Item.name} and added to inventory.");
+            }
+            else
+            {
+                Debug.LogWarning("The object does not have an ItemController component!");
             }
         }
-    }
-
-    private void AttachItem()
-    {
-        Rigidbody itemRigidbody = heldItem.GetComponent<Rigidbody>();
-        if (itemRigidbody != null)
-            itemRigidbody.isKinematic = true;
-
-        heldItem.transform.SetParent(itemHoldPoint);
-        heldItem.transform.localPosition = Vector3.zero; // Align position
-        heldItem.transform.localRotation = Quaternion.identity; // Align rotation
     }
 
     private void DropItem()
