@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class Pickup : MonoBehaviour
 {
-    [SerializeField] Transform itemHoldPoint;
-    [SerializeField] private GameObject heldItem;
+    [SerializeField] Transform itemHoldPoint;  // Where the player holds the item
+    [SerializeField] private GameObject heldItem;  // Currently held item
     [SerializeField] float pickupRange = 3f;
     [SerializeField] LayerMask pickupLayer;
-    [SerializeField] public Item Item;
 
     private PlayerInput playerInput;
 
@@ -40,24 +39,42 @@ public class Pickup : MonoBehaviour
         {
             GameObject item = hit.collider.gameObject;
 
-            // Check if the item has an ItemController component
             ItemController itemController = item.GetComponent<ItemController>();
             if (itemController != null)
             {
-                // Add the item to the InventoryManager
+                // Add item to inventory
                 InventoryManager.Instance.Add(itemController.Item);
-                InventoryManager.Instance.Add(Item);
 
-                // Deactivate the item in the scene
-                item.SetActive(false);
-
-                Debug.Log($"Picked up {itemController.Item.name} and added to inventory.");
+                // Give player the choice to hold it or send it directly to the inventory
+                if (heldItem == null)
+                {
+                    HoldItem(item);
+                }
+                else
+                {
+                    item.SetActive(false); // Send to inventory without holding
+                    Debug.Log($"{itemController.Item.name} added to inventory.");
+                }
             }
             else
             {
                 Debug.LogWarning("The object does not have an ItemController component!");
             }
         }
+    }
+
+    private void HoldItem(GameObject item)
+    {
+        heldItem = item;
+        heldItem.transform.SetParent(itemHoldPoint);
+        heldItem.transform.localPosition = Vector3.zero;
+        heldItem.transform.localRotation = Quaternion.identity;
+
+        Rigidbody itemRigidbody = heldItem.GetComponent<Rigidbody>();
+        if (itemRigidbody != null)
+            itemRigidbody.isKinematic = true;
+
+        Debug.Log($"Holding {heldItem.name}");
     }
 
     private void DropItem()
@@ -70,5 +87,7 @@ public class Pickup : MonoBehaviour
 
         heldItem.transform.SetParent(null);
         heldItem = null;
+
+        Debug.Log("Dropped item.");
     }
 }
