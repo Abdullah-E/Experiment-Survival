@@ -24,10 +24,9 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float fillAm = Mathf.Clamp(health / maxHealth, 0, 1);
-        healthBar.fillAmount = fillAm;
+        healthBar.fillAmount = Mathf.Clamp(health / maxHealth, 0, 1);
 
-        Debug.Log("Health: " + fillAm);
+        // Debug.Log("Health: " + fillAm);
     }
 
     public void TakeDamage(float damage){

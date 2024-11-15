@@ -14,6 +14,7 @@ public class InputManager : MonoBehaviour
     public Bench ActiveBench {get;private set;}
 
     private PlayerMotor motor;
+    private PlayerAttack attack;
     private PlayerLook look;
     void Awake() {
         //initialization
@@ -23,8 +24,10 @@ public class InputManager : MonoBehaviour
 
 
         motor = GetComponent<PlayerMotor>();
+        attack = GetComponent<PlayerAttack>();
         //callback attached:
         standing.Jump.performed += ctx => motor.Jump();
+        standing.Attack.performed += ctx => attack.Attack();
 
         look = GetComponent<PlayerLook>();
 
